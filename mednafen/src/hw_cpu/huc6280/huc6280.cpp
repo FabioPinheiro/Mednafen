@@ -35,6 +35,8 @@
 
 #include <string.h>
 
+#include "history.h"
+
 #ifdef WANT_DEBUGGER
  #include        <trio/trio.h>
 #endif
@@ -42,6 +44,36 @@
 //#define IncPC()	{ PC++; if(!(PC & 0x1FFF)) printf("Crossing: %04x %02x\n", PC - 1, lastop); }
 
 #define LASTCYCLE /*assert(((P & I_FLAG) ? 0 : (uint32)~0) == PIMaskCache);*/ IRQSample = (IRQlow & IRQMask) & PIMaskCache; IFlagSample = P & I_FLAG; ADDCYC(1);
+
+
+#include <map>
+
+
+std::map<uint16,int> map;
+unsigned int contador = 0;
+void history::Add(uint16 pc){
+	
+	contador++;
+	
+	if(map.count(pc)==0)
+		map[pc]=1;
+	else
+		map[pc]++;
+	
+	if(contador == 100000){
+		printMap();
+		contador = 0;
+	}
+}
+void history::printMap(){
+	for (std::map<uint16,int>::iterator it=map.begin(); it!=map.end(); ++it)
+		printf("%x => %d\n",it->first , it->second );
+	
+}
+
+
+history *h = new history();
+
 
 void HuC6280::StealCycle(void)
 {
