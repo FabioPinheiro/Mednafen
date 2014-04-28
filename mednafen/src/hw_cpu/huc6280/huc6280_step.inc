@@ -86,7 +86,7 @@
 	  }
 	 }
          PC &= 0xFFFF;     // Our cpu core can only handle PC going about 8192 bytes over, so make sure it never gets that far...
-
+		printf("%x\n", PC);
 	 lastop = RdOp(PC);
 
 	 PC++;
