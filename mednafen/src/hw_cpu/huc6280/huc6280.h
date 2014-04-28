@@ -3,6 +3,14 @@
 
 #include        <trio/trio.h>
 
+class history{
+
+
+public: 
+	void Add(uint16 pc);
+	void printMap();
+};
+
 class HuC6280_Support
 {
 	public:
