@@ -7,7 +7,7 @@ class history{
 
 
 public: 
-	void Add(uint16 pc);
+	void Add(uint8 pc);
 	void printMap();
 };
 
@@ -80,7 +80,8 @@ class HuC6280
 	{
 	 IODataBuffer = v;
 	}
-
+	
+	
 	uint8 TimerRead(unsigned int address, bool peek = FALSE);
 	void TimerWrite(unsigned int address, uint8 V);
 

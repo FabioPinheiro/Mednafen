@@ -16,7 +16,8 @@
  */
 
 case 0x00:  /* BRK */
-            PC++;
+lab00:
+		PC++;
 	    P &= ~T_FLAG;
             PUSH(PC >> 8);
             PUSH(PC);
@@ -362,7 +363,9 @@ case 0xB1: LD_IY(LDA);
 case 0xA2: LD_IM(LDX);
 case 0xA6: LD_ZP(LDX);
 case 0xB6: LD_ZPY(LDX);
-case 0xAE: LD_AB(LDX);
+case 0xAE: 
+labae:
+	LD_AB(LDX);
 case 0xBE: LD_ABY(LDX);
 
 case 0xA0: LD_IM(LDY);
@@ -396,7 +399,9 @@ case 0x95: ST_ZPX(A);
 case 0x8D: ST_AB(A);
 case 0x9D: ST_ABX(A);
 case 0x99: ST_ABY(A);
-case 0x92: ST_IND(A);
+case 0x92: 
+lab92:
+	ST_IND(A);
 case 0x81: ST_IX(A);
 case 0x91: ST_IY(A);
 
@@ -405,7 +410,9 @@ case 0x96: ST_ZPY(X);
 case 0x8E: ST_AB(X);
 
 case 0x84: ST_ZP(Y);
-case 0x94: ST_ZPX(Y);
+case 0x94: 
+lab94:
+	ST_ZPX(Y);
 case 0x8C: ST_AB(Y);
 
 /* BBRi */
@@ -445,7 +452,11 @@ case 0x44:
 case 0x90: JR<DebugMode>(!(P&C_FLAG)); break;
 
 /* BCS */
-case 0xB0: JR<DebugMode>(P&C_FLAG); break;
+case 0xB0: 
+labb0:	
+	JR<DebugMode>(P&C_FLAG);
+	checkMap;
+	break;
 
 /* BEQ */
 case 0xF0: JR<DebugMode>(P&Z_FLAG); break;

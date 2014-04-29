@@ -35,8 +35,6 @@
 
 #include <string.h>
 
-#include "history.h"
-
 #ifdef WANT_DEBUGGER
  #include        <trio/trio.h>
 #endif
@@ -49,28 +47,72 @@
 #include <map>
 
 
-std::map<uint16,int> map;
+std::map<uint8,void*> map;
+std::map<uint8,int> mapTo;
 unsigned int contador = 0;
-void history::Add(uint16 pc){
+void history::Add(uint8 pc){
+	/*
+	map[0x92]=&lab92;
+	map[0x94]=&lab94;
+	map[0x00]=&lab00;
+	map[0xae]=&labae;
+	map[0xb0]=&labb0;*/
+
+
 	
 	contador++;
 	
-	if(map.count(pc)==0)
-		map[pc]=1;
+	if(mapTo.count(pc)==0)
+		mapTo[pc]=1;
 	else
-		map[pc]++;
+		mapTo[pc]++;
 	
-	if(contador == 100000){
+	if(contador == 5000000){
 		printMap();
 		contador = 0;
 	}
 }
 void history::printMap(){
-	for (std::map<uint16,int>::iterator it=map.begin(); it!=map.end(); ++it)
-		printf("%x => %d\n",it->first , it->second );
+	for (std::map<uint8,int>::iterator it=mapTo.begin(); it!=mapTo.end(); ++it)
+		printf("%02x => %d\n",it->first , it->second );
 	
 }
-
+/*
+void* HuC6280::checkMap(){
+	map[0x92]=&&lab92;
+	map[0x94]=&&lab94;
+	map[0x00]=&&lab00;
+	map[0xae]=&&labae;
+	map[0xb0]=&&labb0;
+	
+	uint8 newOp = RdOp(PC);
+	if(map.count(newOp)==1){
+		PC++;
+		goto *(map[newOp]);
+	}
+		
+}*/
+#define checkMap {  \
+	uint8 aux; \
+	aux = 0x92; \
+	map[aux]=&&lab92; \
+	aux = 0x94; \
+	map[aux]=&&lab94; \
+	aux = 0x00; \
+	map[aux]=&&lab00; \
+	aux = 0xae; \
+	map[aux]=&&labae; \
+	aux = 0xb0; \
+	map[aux]=&&labb0; \
+	uint8 newOp; \
+	newOp = RdOp(PC);\
+	if(map.count(newOp)==1){ \
+		printf("goto ha ha %02x  %p   %p\n",newOp, map[0x92], &&lab92);\
+		PC++;  \
+		goto *(map[newOp]);  \
+		printf("NAO DEVE IMPRIMIR ISTO");\
+	}  \
+	}
 
 history *h = new history();
 
@@ -407,7 +449,7 @@ INLINE void HuC6280::BBSi(const uint8 val, const unsigned int bitto)
 #define LD_ZP(op)	{unsigned int EA; uint8 x; GetZP(EA); ADDCYC(3); LASTCYCLE; x=RdMem(EA); op; break;}
 #define LD_ZPX(op)  	{unsigned int EA; uint8 x; GetZPI(EA, X); ADDCYC(3); LASTCYCLE; x=RdMem(EA); op; break;}
 #define LD_ZPY(op)  	{unsigned int EA; uint8 x; GetZPI(EA, Y); ADDCYC(3); LASTCYCLE; x=RdMem(EA); op; break;}
-#define LD_AB(op)	{unsigned int EA; uint8 x; GetAB(EA); ADDCYC(4); LASTCYCLE; x=RdMem(EA); op; break; }
+#define LD_AB(op)	{unsigned int EA; uint8 x; GetAB(EA); ADDCYC(4); LASTCYCLE; x=RdMem(EA); op; checkMap; break; }
 #define LD_ABI(reg,op)  {unsigned int EA; uint8 x; GetABI(EA,reg); ADDCYC(4); LASTCYCLE; x=RdMem(EA); op; break;}
 #define LD_ABX(op)	LD_ABI(X, op)
 #define LD_ABY(op)	LD_ABI(Y, op)
@@ -444,7 +486,7 @@ INLINE void HuC6280::BBSi(const uint8 val, const unsigned int bitto)
 #define ST_ABX(r)	ST_ABI(X, r)
 #define ST_ABY(r)	ST_ABI(Y, r)
 
-#define ST_IND(r)	{unsigned int EA; GetIND(EA); ADDCYC(6); LASTCYCLE; WrMem(EA,r); break; }
+#define ST_IND(r)	{unsigned int EA; GetIND(EA); ADDCYC(6); LASTCYCLE; WrMem(EA,r); checkMap; break; }
 #define ST_IX(r)	{unsigned int EA; GetIX(EA); ADDCYC(6); LASTCYCLE; WrMem(EA,r); break; }
 #define ST_IY(r)	{unsigned int EA; GetIY(EA); ADDCYC(6); LASTCYCLE; WrMem(EA,r); break; }
 
