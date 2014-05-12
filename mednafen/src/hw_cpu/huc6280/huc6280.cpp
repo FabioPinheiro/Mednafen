@@ -50,7 +50,9 @@
 std::map<uint8,void*> map;
 std::map<uint8,int> mapTo;
 unsigned int contador = 0;
-void history::Add(uint8 pc){
+double jumps = 0;
+double normal = 0;
+void HuC6280::Add(uint8 pc){
 	/*
 	map[0x92]=&lab92;
 	map[0x94]=&lab94;
@@ -60,7 +62,7 @@ void history::Add(uint8 pc){
 
 
 	
-	contador++;
+	
 	
 	if(mapTo.count(pc)==0)
 		mapTo[pc]=1;
@@ -69,21 +71,17 @@ void history::Add(uint8 pc){
 	
 	if(contador == 5000000){
 		printMap();
-		contador = 0;
 	}
 }
-void history::printMap(){
+void HuC6280::printMap(){
+	printf("%f   %f   %f  %f  contador: %d\n", normal,jumps, jumps/(jumps+normal), (jumps+normal), contador);
 	for (std::map<uint8,int>::iterator it=mapTo.begin(); it!=mapTo.end(); ++it)
 		printf("%02x => %d\n",it->first , it->second );
 	
 }
 /*
 void* HuC6280::checkMap(){
-	map[0x92]=&&lab92;
-	map[0x94]=&&lab94;
-	map[0x00]=&&lab00;
-	map[0xae]=&&labae;
-	map[0xb0]=&&labb0;
+
 	
 	uint8 newOp = RdOp(PC);
 	if(map.count(newOp)==1){
@@ -92,10 +90,12 @@ void* HuC6280::checkMap(){
 	}
 		
 }*/
-#define checkMap {  \
+/*	
 	uint8 aux; \
 	aux = 0x92; \
 	map[aux]=&&lab92; \
+	aux = 0xa5; \
+	map[aux]=&&laba5; \
 	aux = 0x94; \
 	map[aux]=&&lab94; \
 	aux = 0x00; \
@@ -104,17 +104,22 @@ void* HuC6280::checkMap(){
 	map[aux]=&&labae; \
 	aux = 0xb0; \
 	map[aux]=&&labb0; \
+	*/
+
+#define checkMap {  \
 	uint8 newOp; \
 	newOp = RdOp(PC);\
-	if(map.count(newOp)==1){ \
-		printf("goto ha ha %02x  %p   %p\n",newOp, map[0x92], &&lab92);\
+	if(map.count(newOp)==1 && contador%2==0){\
 		PC++;  \
+		jumps++; \
 		goto *(map[newOp]);  \
-		printf("NAO DEVE IMPRIMIR ISTO");\
-	}  \
-	}
+	}else{ \
+		normal++;\
+		goto after;\
+	}\
+}
 
-history *h = new history();
+//history *h = new history();
 
 
 void HuC6280::StealCycle(void)
@@ -449,7 +454,7 @@ INLINE void HuC6280::BBSi(const uint8 val, const unsigned int bitto)
 #define LD_ZP(op)	{unsigned int EA; uint8 x; GetZP(EA); ADDCYC(3); LASTCYCLE; x=RdMem(EA); op; break;}
 #define LD_ZPX(op)  	{unsigned int EA; uint8 x; GetZPI(EA, X); ADDCYC(3); LASTCYCLE; x=RdMem(EA); op; break;}
 #define LD_ZPY(op)  	{unsigned int EA; uint8 x; GetZPI(EA, Y); ADDCYC(3); LASTCYCLE; x=RdMem(EA); op; break;}
-#define LD_AB(op)	{unsigned int EA; uint8 x; GetAB(EA); ADDCYC(4); LASTCYCLE; x=RdMem(EA); op; checkMap; break; }
+#define LD_AB(op)	{unsigned int EA; uint8 x; GetAB(EA); ADDCYC(4); LASTCYCLE; x=RdMem(EA); op; /*checkMap;*/ break; }
 #define LD_ABI(reg,op)  {unsigned int EA; uint8 x; GetABI(EA,reg); ADDCYC(4); LASTCYCLE; x=RdMem(EA); op; break;}
 #define LD_ABX(op)	LD_ABI(X, op)
 #define LD_ABY(op)	LD_ABI(Y, op)
@@ -486,7 +491,7 @@ INLINE void HuC6280::BBSi(const uint8 val, const unsigned int bitto)
 #define ST_ABX(r)	ST_ABI(X, r)
 #define ST_ABY(r)	ST_ABI(Y, r)
 
-#define ST_IND(r)	{unsigned int EA; GetIND(EA); ADDCYC(6); LASTCYCLE; WrMem(EA,r); checkMap; break; }
+#define ST_IND(r)	{unsigned int EA; GetIND(EA); ADDCYC(6); LASTCYCLE; WrMem(EA,r); /*checkMap;*/ break; }
 #define ST_IX(r)	{unsigned int EA; GetIX(EA); ADDCYC(6); LASTCYCLE; WrMem(EA,r); break; }
 #define ST_IY(r)	{unsigned int EA; GetIY(EA); ADDCYC(6); LASTCYCLE; WrMem(EA,r); break; }
 
@@ -624,9 +629,50 @@ void HuC6280::HappySync(void)
  CalcNextEvent();
 }
 
+
 template<bool DebugMode>
 void HuC6280::RunSub(void)
-{
+{	
+
+/*	map[0x00]= &&after;		map[0x40]= &&after;		map[0x60]= &&after;		map[0x48]= &&after;		map[0x08]= &&after;		map[0xDA]= &&after;		map[0x5A]= &&after;		map[0x68]= &&after;
+	map[0xFA]= &&after;		map[0x7A]= &&after;		map[0x28]= &&after;		map[0x4C]= &&after;		map[0x6C]= &&after;		map[0x7C]= &&after;		map[0x20]= &&after;		map[0xAA]= &&after;
+	map[0x8A]= &&after;		map[0xA8]= &&after;		map[0x98]= &&after;		map[0xBA]= &&after;		map[0x9A]= &&after;		map[0xCA]= &&after;		map[0x88]= &&after;		map[0xE8]= &&after;
+	map[0xC8]= &&after;		map[0x54]= &&after;		map[0xD4]= &&after;		map[0x62]= &&after;		map[0x82]= &&after;		map[0xC2]= &&after;		map[0x18]= &&after;		map[0xD8]= &&after;
+	map[0x58]= &&after;		map[0xB8]= &&after;		map[0x38]= &&after;		map[0xF8]= &&after;		map[0x78]= &&after;		map[0xF4]= &&after;		map[0xEA]= &&after;		map[0x0A]= &&after;
+	map[0x06]= &&after;		map[0x16]= &&after;		map[0x0E]= &&after;		map[0x1E]= &&after;		map[0x3A]= &&after;		map[0xC6]= &&after;		map[0xD6]= &&after;		map[0xCE]= &&after;
+	map[0xDE]= &&after;		map[0x1A]= &&after;		map[0xE6]= &&after;		map[0xF6]= &&after;		map[0xEE]= &&after;		map[0xFE]= &&after;		map[0x4A]= &&after;		map[0x46]= &&after;
+	map[0x56]= &&after;		map[0x4E]= &&after;		map[0x5E]= &&after;		map[0x2A]= &&after;		map[0x26]= &&after;		map[0x36]= &&after;		map[0x2E]= &&after;		map[0x3E]= &&after;
+	map[0x6A]= &&after;		map[0x66]= &&after;		map[0x76]= &&after;		map[0x6E]= &&after;		map[0x7E]= &&after;		map[0x69]= &&after;		map[0x65]= &&after;		map[0x75]= &&after;
+	map[0x6D]= &&after;		map[0x7D]= &&after;		map[0x79]= &&after;		map[0x72]= &&after;		map[0x61]= &&after;		map[0x71]= &&after;		map[0x29]= &&after;		map[0x25]= &&after;
+	map[0x35]= &&after;		map[0x2D]= &&after;		map[0x3D]= &&after;		map[0x39]= &&after;		map[0x32]= &&after;		map[0x21]= &&after;		map[0x31]= &&after;		map[0x89]= &&after;
+	map[0x24]= &&after;		map[0x34]= &&after;		map[0x2C]= &&after;		map[0x3C]= &&after;		map[0xC9]= &&after;		map[0xC5]= &&after;		map[0xD5]= &&after;		map[0xCD]= &&after;
+	map[0xDD]= &&after;		map[0xD9]= &&after;		map[0xD2]= &&after;		map[0xC1]= &&after;		map[0xD1]= &&after;		map[0xE0]= &&after;		map[0xE4]= &&after;		map[0xEC]= &&after;
+	map[0xC0]= &&after;		map[0xC4]= &&after;		map[0xCC]= &&after;		map[0x49]= &&after;		map[0x45]= &&after;		map[0x55]= &&after;		map[0x4D]= &&after;		map[0x5D]= &&after;
+	map[0x59]= &&after;		map[0x52]= &&after;		map[0x41]= &&after;		map[0x51]= &&after;		map[0xA9]= &&after;		map[0xA5]= &&after;		map[0xB5]= &&after;		map[0xAD]= &&after;
+	map[0xBD]= &&after;		map[0xB9]= &&after;		map[0xB2]= &&after;		map[0xA1]= &&after;		map[0xB1]= &&after;		map[0xA2]= &&after;		map[0xA6]= &&after;		map[0xB6]= &&after;
+	map[0xAE]= &&after;		map[0xBE]= &&after;		map[0xA0]= &&after;		map[0xA4]= &&after;		map[0xB4]= &&after;		map[0xAC]= &&after;		map[0xBC]= &&after;		map[0x09]= &&after;
+	map[0x05]= &&after;		map[0x15]= &&after;		map[0x0D]= &&after;		map[0x1D]= &&after;		map[0x19]= &&after;		map[0x12]= &&after;		map[0x01]= &&after;		map[0x11]= &&after;
+	map[0xE9]= &&after;		map[0xE5]= &&after;		map[0xF5]= &&after;		map[0xED]= &&after;		map[0xFD]= &&after;		map[0xF9]= &&after;		map[0xF2]= &&after;		map[0xE1]= &&after;
+	map[0xF1]= &&after;		map[0x85]= &&after;		map[0x95]= &&after;		map[0x8D]= &&after;		map[0x9D]= &&after;		map[0x99]= &&after;		map[0x92]= &&after;		map[0x81]= &&after;
+	map[0x91]= &&after;		map[0x86]= &&after;		map[0x96]= &&after;		map[0x8E]= &&after;		map[0x84]= &&after;		map[0x94]= &&after;		map[0x8C]= &&after;		map[0x0F]= &&after;
+	map[0x1F]= &&after;		map[0x2F]= &&after;		map[0x3F]= &&after;		map[0x4F]= &&after;		map[0x5F]= &&after;		map[0x6F]= &&after;		map[0x7F]= &&after;		map[0x8F]= &&after;
+	map[0x9F]= &&after;		map[0xAF]= &&after;		map[0xBF]= &&after;		map[0xCF]= &&after;		map[0xDF]= &&after;		map[0xEF]= &&after;		map[0xFF]= &&after;		map[0x80]= &&after;
+	map[0x44]= &&after;		map[0x90]= &&after;		map[0xB0]= &&after;		map[0xF0]= &&after;		map[0xD0]= &&after;		map[0x30]= &&after;		map[0x10]= &&after;		map[0x50]= &&after;
+	map[0x70]= &&after;		map[0x07]= &&after;		map[0x17]= &&after;		map[0x27]= &&after;		map[0x37]= &&after;		map[0x47]= &&after;		map[0x57]= &&after;		map[0x67]= &&after;
+	map[0x77]= &&after;		map[0x87]= &&after;		map[0x97]= &&after;		map[0xa7]= &&after;		map[0xb7]= &&after;		map[0xc7]= &&after;		map[0xd7]= &&after;		map[0xe7]= &&after;
+	map[0xf7]= &&after;		map[0x64]= &&after;		map[0x74]= &&after;		map[0x9C]= &&after;		map[0x9E]= &&after;		map[0x14]= &&after;		map[0x1C]= &&after;		map[0x04]= &&after;
+	map[0x0C]= &&after;		map[0x83]= &&after;		map[0xA3]= &&after;		map[0x93]= &&after;		map[0xB3]= &&after;		map[0x02]= &&after;		map[0x22]= &&after;		map[0x42]= &&after;
+	map[0x73]= &&after;		map[0xC3]= &&after;		map[0xD3]= &&after;		map[0xE3]= &&after;		map[0xF3]= &&after;		map[0x43]= &&after;		map[0x53]= &&after;		map[0x03]= &&after;
+	map[0x13]= &&after;		map[0x23]= &&after;		map[0xCB]= &&after;
+*/	
+	map[0x92]=&&lab92;
+	map[0xa5]=&&laba5;
+	map[0x94]=&&lab94;
+	map[0x00]=&&lab00;
+	map[0xae]=&&labae;
+	map[0xb0]=&&labb0; 
+
+	
 	uint32 old_PC;
 
         if(in_block_move)
@@ -644,7 +690,7 @@ void HuC6280::RunSub(void)
         }
 
 	do
-        {
+    {
 	 #include "huc6280_step.inc"
 	} while(runrunrun > 0);
 }

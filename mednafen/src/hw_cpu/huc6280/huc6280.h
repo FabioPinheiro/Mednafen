@@ -2,14 +2,14 @@
 #define __MDFN_HUC6280_H
 
 #include        <trio/trio.h>
-
+/*
 class history{
 
 
 public: 
 	void Add(uint8 pc);
-	void printMap();
-};
+	//void printMap();
+};*/
 
 class HuC6280_Support
 {
@@ -30,7 +30,8 @@ class HuC6280_Support
 class HuC6280
 {
 	public:
-
+	void printMap();
+	void Add(uint8 pc);
 	typedef void (*writefunc)(uint32 A, uint8 V);
 	typedef uint8 (*readfunc)(uint32 A);
 
@@ -67,6 +68,7 @@ class HuC6280
 	{
 	 IRQlow &= ~w;
 	}
+	
 
 
 	void TimerSync(void);

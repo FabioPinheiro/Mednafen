@@ -93,13 +93,17 @@
 		
 	//printf("%x\n", PC);
 	lastop = RdOp(PC);
-	h->Add(lastop);
+	Add(lastop);
 	PC++;
+	contador++;
 	//checkMap;
     switch(lastop)
          {
           #include "ops.inc"
-         } 
+         }
+
+     
 	 P &= ~T_FLAG;
 	 skip_T_flag_clear:;	// goto'd by the SET code
-
+     checkMap;
+     after:;

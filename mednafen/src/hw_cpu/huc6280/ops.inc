@@ -351,7 +351,9 @@ case 0x41: LD_IX(EOR);
 case 0x51: LD_IY(EOR);
 
 case 0xA9: LD_IM(LDA);
-case 0xA5: LD_ZP(LDA);
+case 0xA5: 
+laba5:
+	LD_ZP(LDA);
 case 0xB5: LD_ZPX(LDA);
 case 0xAD: LD_AB(LDA);
 case 0xBD: LD_ABX(LDA);
@@ -455,7 +457,7 @@ case 0x90: JR<DebugMode>(!(P&C_FLAG)); break;
 case 0xB0: 
 labb0:	
 	JR<DebugMode>(P&C_FLAG);
-	checkMap;
+//	checkMap;
 	break;
 
 /* BEQ */
