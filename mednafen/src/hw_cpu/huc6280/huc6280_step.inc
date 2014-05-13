@@ -93,7 +93,7 @@
 		
 	//printf("%x\n", PC);
 	lastop = RdOp(PC);
-	Add(lastop);
+	
 	PC++;
 
 	//checkMap;

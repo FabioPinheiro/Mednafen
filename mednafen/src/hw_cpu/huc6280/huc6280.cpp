@@ -122,6 +122,7 @@ void* HuC6280::checkMap(){
 #define checkMap {  \
 	uint8 newOp; \
 	newOp = RdOp(PC);\
+	Add(newOp);\
 	PC++;  \
 	goto *(map[newOp]);  \
 }
@@ -712,7 +713,10 @@ void HuC6280::RunSub(void)
 	map[aux]=&&labae;
 	aux = 0xb0;
 	map[aux]=&&labb0; 
-
+	aux = 0xc9;
+	map[aux]=&&labc9;
+	aux = 0x90;
+	map[aux]=&&lab90;
 	
 	uint32 old_PC;
 

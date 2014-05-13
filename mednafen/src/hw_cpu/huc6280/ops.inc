@@ -322,7 +322,9 @@ case 0x34: LD_ZPX(BIT);
 case 0x2C: LD_AB(BIT);
 case 0x3C: LD_ABX(BIT);
 
-case 0xC9: LD_IM(CMP);
+case 0xC9: 
+labc9:
+	LD_IM(CMP);
 case 0xC5: LD_ZP(CMP);
 case 0xD5: LD_ZPX(CMP);
 case 0xCD: LD_AB(CMP);
@@ -451,7 +453,9 @@ case 0x44:
 	   break;
 
 /* BCC */
-case 0x90: JR<DebugMode>(!(P&C_FLAG)); break;
+case 0x90:
+lab90:
+JR<DebugMode>(!(P&C_FLAG)); break;
 
 /* BCS */
 case 0xB0: 
