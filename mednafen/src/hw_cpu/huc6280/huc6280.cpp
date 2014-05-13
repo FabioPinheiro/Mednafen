@@ -69,7 +69,7 @@ void HuC6280::Add(uint8 pc){
 	else
 		mapTo[pc]++;
 	
-	if(contador == 5000000){
+	if(contador == 10000000){
 		printMap();
 	}
 }
@@ -106,7 +106,7 @@ void* HuC6280::checkMap(){
 	map[aux]=&&labb0; \
 	*/
 
-#define checkMap {  \
+/*#define checkMap {  \
 	uint8 newOp; \
 	newOp = RdOp(PC);\
 	if(map.count(newOp)==1 && contador%2==0){\
@@ -117,8 +117,14 @@ void* HuC6280::checkMap(){
 		normal++;\
 		goto after;\
 	}\
-}
+}*/
 
+#define checkMap {  \
+	uint8 newOp; \
+	newOp = RdOp(PC);\
+	PC++;  \
+	goto *(map[newOp]);  \
+}
 //history *h = new history();
 
 
@@ -634,43 +640,78 @@ template<bool DebugMode>
 void HuC6280::RunSub(void)
 {	
 
-/*	map[0x00]= &&after;		map[0x40]= &&after;		map[0x60]= &&after;		map[0x48]= &&after;		map[0x08]= &&after;		map[0xDA]= &&after;		map[0x5A]= &&after;		map[0x68]= &&after;
-	map[0xFA]= &&after;		map[0x7A]= &&after;		map[0x28]= &&after;		map[0x4C]= &&after;		map[0x6C]= &&after;		map[0x7C]= &&after;		map[0x20]= &&after;		map[0xAA]= &&after;
-	map[0x8A]= &&after;		map[0xA8]= &&after;		map[0x98]= &&after;		map[0xBA]= &&after;		map[0x9A]= &&after;		map[0xCA]= &&after;		map[0x88]= &&after;		map[0xE8]= &&after;
-	map[0xC8]= &&after;		map[0x54]= &&after;		map[0xD4]= &&after;		map[0x62]= &&after;		map[0x82]= &&after;		map[0xC2]= &&after;		map[0x18]= &&after;		map[0xD8]= &&after;
-	map[0x58]= &&after;		map[0xB8]= &&after;		map[0x38]= &&after;		map[0xF8]= &&after;		map[0x78]= &&after;		map[0xF4]= &&after;		map[0xEA]= &&after;		map[0x0A]= &&after;
-	map[0x06]= &&after;		map[0x16]= &&after;		map[0x0E]= &&after;		map[0x1E]= &&after;		map[0x3A]= &&after;		map[0xC6]= &&after;		map[0xD6]= &&after;		map[0xCE]= &&after;
-	map[0xDE]= &&after;		map[0x1A]= &&after;		map[0xE6]= &&after;		map[0xF6]= &&after;		map[0xEE]= &&after;		map[0xFE]= &&after;		map[0x4A]= &&after;		map[0x46]= &&after;
-	map[0x56]= &&after;		map[0x4E]= &&after;		map[0x5E]= &&after;		map[0x2A]= &&after;		map[0x26]= &&after;		map[0x36]= &&after;		map[0x2E]= &&after;		map[0x3E]= &&after;
-	map[0x6A]= &&after;		map[0x66]= &&after;		map[0x76]= &&after;		map[0x6E]= &&after;		map[0x7E]= &&after;		map[0x69]= &&after;		map[0x65]= &&after;		map[0x75]= &&after;
-	map[0x6D]= &&after;		map[0x7D]= &&after;		map[0x79]= &&after;		map[0x72]= &&after;		map[0x61]= &&after;		map[0x71]= &&after;		map[0x29]= &&after;		map[0x25]= &&after;
-	map[0x35]= &&after;		map[0x2D]= &&after;		map[0x3D]= &&after;		map[0x39]= &&after;		map[0x32]= &&after;		map[0x21]= &&after;		map[0x31]= &&after;		map[0x89]= &&after;
-	map[0x24]= &&after;		map[0x34]= &&after;		map[0x2C]= &&after;		map[0x3C]= &&after;		map[0xC9]= &&after;		map[0xC5]= &&after;		map[0xD5]= &&after;		map[0xCD]= &&after;
-	map[0xDD]= &&after;		map[0xD9]= &&after;		map[0xD2]= &&after;		map[0xC1]= &&after;		map[0xD1]= &&after;		map[0xE0]= &&after;		map[0xE4]= &&after;		map[0xEC]= &&after;
-	map[0xC0]= &&after;		map[0xC4]= &&after;		map[0xCC]= &&after;		map[0x49]= &&after;		map[0x45]= &&after;		map[0x55]= &&after;		map[0x4D]= &&after;		map[0x5D]= &&after;
-	map[0x59]= &&after;		map[0x52]= &&after;		map[0x41]= &&after;		map[0x51]= &&after;		map[0xA9]= &&after;		map[0xA5]= &&after;		map[0xB5]= &&after;		map[0xAD]= &&after;
-	map[0xBD]= &&after;		map[0xB9]= &&after;		map[0xB2]= &&after;		map[0xA1]= &&after;		map[0xB1]= &&after;		map[0xA2]= &&after;		map[0xA6]= &&after;		map[0xB6]= &&after;
-	map[0xAE]= &&after;		map[0xBE]= &&after;		map[0xA0]= &&after;		map[0xA4]= &&after;		map[0xB4]= &&after;		map[0xAC]= &&after;		map[0xBC]= &&after;		map[0x09]= &&after;
-	map[0x05]= &&after;		map[0x15]= &&after;		map[0x0D]= &&after;		map[0x1D]= &&after;		map[0x19]= &&after;		map[0x12]= &&after;		map[0x01]= &&after;		map[0x11]= &&after;
-	map[0xE9]= &&after;		map[0xE5]= &&after;		map[0xF5]= &&after;		map[0xED]= &&after;		map[0xFD]= &&after;		map[0xF9]= &&after;		map[0xF2]= &&after;		map[0xE1]= &&after;
-	map[0xF1]= &&after;		map[0x85]= &&after;		map[0x95]= &&after;		map[0x8D]= &&after;		map[0x9D]= &&after;		map[0x99]= &&after;		map[0x92]= &&after;		map[0x81]= &&after;
-	map[0x91]= &&after;		map[0x86]= &&after;		map[0x96]= &&after;		map[0x8E]= &&after;		map[0x84]= &&after;		map[0x94]= &&after;		map[0x8C]= &&after;		map[0x0F]= &&after;
-	map[0x1F]= &&after;		map[0x2F]= &&after;		map[0x3F]= &&after;		map[0x4F]= &&after;		map[0x5F]= &&after;		map[0x6F]= &&after;		map[0x7F]= &&after;		map[0x8F]= &&after;
-	map[0x9F]= &&after;		map[0xAF]= &&after;		map[0xBF]= &&after;		map[0xCF]= &&after;		map[0xDF]= &&after;		map[0xEF]= &&after;		map[0xFF]= &&after;		map[0x80]= &&after;
-	map[0x44]= &&after;		map[0x90]= &&after;		map[0xB0]= &&after;		map[0xF0]= &&after;		map[0xD0]= &&after;		map[0x30]= &&after;		map[0x10]= &&after;		map[0x50]= &&after;
-	map[0x70]= &&after;		map[0x07]= &&after;		map[0x17]= &&after;		map[0x27]= &&after;		map[0x37]= &&after;		map[0x47]= &&after;		map[0x57]= &&after;		map[0x67]= &&after;
-	map[0x77]= &&after;		map[0x87]= &&after;		map[0x97]= &&after;		map[0xa7]= &&after;		map[0xb7]= &&after;		map[0xc7]= &&after;		map[0xd7]= &&after;		map[0xe7]= &&after;
-	map[0xf7]= &&after;		map[0x64]= &&after;		map[0x74]= &&after;		map[0x9C]= &&after;		map[0x9E]= &&after;		map[0x14]= &&after;		map[0x1C]= &&after;		map[0x04]= &&after;
-	map[0x0C]= &&after;		map[0x83]= &&after;		map[0xA3]= &&after;		map[0x93]= &&after;		map[0xB3]= &&after;		map[0x02]= &&after;		map[0x22]= &&after;		map[0x42]= &&after;
-	map[0x73]= &&after;		map[0xC3]= &&after;		map[0xD3]= &&after;		map[0xE3]= &&after;		map[0xF3]= &&after;		map[0x43]= &&after;		map[0x53]= &&after;		map[0x03]= &&after;
-	map[0x13]= &&after;		map[0x23]= &&after;		map[0xCB]= &&after;
-*/	
-	map[0x92]=&&lab92;
-	map[0xa5]=&&laba5;
-	map[0x94]=&&lab94;
-	map[0x00]=&&lab00;
-	map[0xae]=&&labae;
-	map[0xb0]=&&labb0; 
+	uint8 aux;
+	aux = 0x40; map[aux] = &&after;	 aux = 0x60; map[aux] = &&after;	 aux = 0x48; map[aux] = &&after;	 aux = 0x08; map[aux] = &&after;	
+	aux = 0xDA; map[aux] = &&after;	 aux = 0x5A; map[aux] = &&after;	 aux = 0x68; map[aux] = &&after;	 aux = 0xFA; map[aux] = &&after;	
+	aux = 0x7A; map[aux] = &&after;	 aux = 0x28; map[aux] = &&after;	 aux = 0x4C; map[aux] = &&after;	 aux = 0x6C; map[aux] = &&after;	
+	aux = 0x7C; map[aux] = &&after;	 aux = 0x20; map[aux] = &&after;	 aux = 0xAA; map[aux] = &&after;	 aux = 0x8A; map[aux] = &&after;	
+	aux = 0xA8; map[aux] = &&after;	 aux = 0x98; map[aux] = &&after;	 aux = 0xBA; map[aux] = &&after;	 aux = 0x9A; map[aux] = &&after;	
+	aux = 0xCA; map[aux] = &&after;	 aux = 0x88; map[aux] = &&after;	 aux = 0xE8; map[aux] = &&after;	 aux = 0xC8; map[aux] = &&after;	
+	aux = 0x54; map[aux] = &&after;	 aux = 0xD4; map[aux] = &&after;	 aux = 0x62; map[aux] = &&after;	 aux = 0x82; map[aux] = &&after;	
+	aux = 0xC2; map[aux] = &&after;	 aux = 0x18; map[aux] = &&after;	 aux = 0xD8; map[aux] = &&after;	 aux = 0x58; map[aux] = &&after;	
+	aux = 0xB8; map[aux] = &&after;	 aux = 0x38; map[aux] = &&after;	 aux = 0xF8; map[aux] = &&after;	 aux = 0x78; map[aux] = &&after;	
+	aux = 0xF4; map[aux] = &&after;	 aux = 0xEA; map[aux] = &&after;	 aux = 0x0A; map[aux] = &&after;	 aux = 0x06; map[aux] = &&after;	
+	aux = 0x16; map[aux] = &&after;	 aux = 0x0E; map[aux] = &&after;	 aux = 0x1E; map[aux] = &&after;	 aux = 0x3A; map[aux] = &&after;	
+	aux = 0xC6; map[aux] = &&after;	 aux = 0xD6; map[aux] = &&after;	 aux = 0xCE; map[aux] = &&after;	 aux = 0xDE; map[aux] = &&after;	
+	aux = 0x1A; map[aux] = &&after;	 aux = 0xE6; map[aux] = &&after;	 aux = 0xF6; map[aux] = &&after;	 aux = 0xEE; map[aux] = &&after;	
+	aux = 0xFE; map[aux] = &&after;	 aux = 0x4A; map[aux] = &&after;	 aux = 0x46; map[aux] = &&after;	 aux = 0x56; map[aux] = &&after;	
+	aux = 0x4E; map[aux] = &&after;	 aux = 0x5E; map[aux] = &&after;	 aux = 0x2A; map[aux] = &&after;	 aux = 0x26; map[aux] = &&after;	
+	aux = 0x36; map[aux] = &&after;	 aux = 0x2E; map[aux] = &&after;	 aux = 0x3E; map[aux] = &&after;	 aux = 0x6A; map[aux] = &&after;	
+	aux = 0x66; map[aux] = &&after;	 aux = 0x76; map[aux] = &&after;	 aux = 0x6E; map[aux] = &&after;	 aux = 0x7E; map[aux] = &&after;	
+	aux = 0x69; map[aux] = &&after;	 aux = 0x65; map[aux] = &&after;	 aux = 0x75; map[aux] = &&after;	 aux = 0x6D; map[aux] = &&after;	
+	aux = 0x7D; map[aux] = &&after;	 aux = 0x79; map[aux] = &&after;	 aux = 0x72; map[aux] = &&after;	 aux = 0x61; map[aux] = &&after;	
+	aux = 0x71; map[aux] = &&after;	 aux = 0x29; map[aux] = &&after;	 aux = 0x25; map[aux] = &&after;	 aux = 0x35; map[aux] = &&after;	
+	aux = 0x2D; map[aux] = &&after;	 aux = 0x3D; map[aux] = &&after;	 aux = 0x39; map[aux] = &&after;	 aux = 0x32; map[aux] = &&after;	
+	aux = 0x21; map[aux] = &&after;	 aux = 0x31; map[aux] = &&after;	 aux = 0x89; map[aux] = &&after;	 aux = 0x24; map[aux] = &&after;	
+	aux = 0x34; map[aux] = &&after;	 aux = 0x2C; map[aux] = &&after;	 aux = 0x3C; map[aux] = &&after;	 aux = 0xC9; map[aux] = &&after;	
+	aux = 0xC5; map[aux] = &&after;	 aux = 0xD5; map[aux] = &&after;	 aux = 0xCD; map[aux] = &&after;	 aux = 0xDD; map[aux] = &&after;	
+	aux = 0xD9; map[aux] = &&after;	 aux = 0xD2; map[aux] = &&after;	 aux = 0xC1; map[aux] = &&after;	 aux = 0xD1; map[aux] = &&after;	
+	aux = 0xE0; map[aux] = &&after;	 aux = 0xE4; map[aux] = &&after;	 aux = 0xEC; map[aux] = &&after;	 aux = 0xC0; map[aux] = &&after;	
+	aux = 0xC4; map[aux] = &&after;	 aux = 0xCC; map[aux] = &&after;	 aux = 0x49; map[aux] = &&after;	 aux = 0x45; map[aux] = &&after;	
+	aux = 0x55; map[aux] = &&after;	 aux = 0x4D; map[aux] = &&after;	 aux = 0x5D; map[aux] = &&after;	 aux = 0x59; map[aux] = &&after;	
+	aux = 0x52; map[aux] = &&after;	 aux = 0x41; map[aux] = &&after;	 aux = 0x51; map[aux] = &&after;	 aux = 0xA9; map[aux] = &&after;	
+	aux = 0xB5; map[aux] = &&after;	 aux = 0xAD; map[aux] = &&after;	 aux = 0xBD; map[aux] = &&after;	 aux = 0xB9; map[aux] = &&after;	
+	aux = 0xB2; map[aux] = &&after;	 aux = 0xA1; map[aux] = &&after;	 aux = 0xB1; map[aux] = &&after;	 aux = 0xA2; map[aux] = &&after;	
+	aux = 0xA6; map[aux] = &&after;	 aux = 0xB6; map[aux] = &&after;	 aux = 0xBE; map[aux] = &&after;	 aux = 0xA0; map[aux] = &&after;	
+	aux = 0xA4; map[aux] = &&after;	 aux = 0xB4; map[aux] = &&after;	 aux = 0xAC; map[aux] = &&after;	 aux = 0xBC; map[aux] = &&after;	
+	aux = 0x09; map[aux] = &&after;	 aux = 0x05; map[aux] = &&after;	 aux = 0x15; map[aux] = &&after;	 aux = 0x0D; map[aux] = &&after;	
+	aux = 0x1D; map[aux] = &&after;	 aux = 0x19; map[aux] = &&after;	 aux = 0x12; map[aux] = &&after;	 aux = 0x01; map[aux] = &&after;	
+	aux = 0x11; map[aux] = &&after;	 aux = 0xE9; map[aux] = &&after;	 aux = 0xE5; map[aux] = &&after;	 aux = 0xF5; map[aux] = &&after;	
+	aux = 0xED; map[aux] = &&after;	 aux = 0xFD; map[aux] = &&after;	 aux = 0xF9; map[aux] = &&after;	 aux = 0xF2; map[aux] = &&after;	
+	aux = 0xE1; map[aux] = &&after;	 aux = 0xF1; map[aux] = &&after;	 aux = 0x85; map[aux] = &&after;	 aux = 0x95; map[aux] = &&after;	
+	aux = 0x8D; map[aux] = &&after;	 aux = 0x9D; map[aux] = &&after;	 aux = 0x99; map[aux] = &&after;	 aux = 0x81; map[aux] = &&after;	
+	aux = 0x91; map[aux] = &&after;	 aux = 0x86; map[aux] = &&after;	 aux = 0x96; map[aux] = &&after;	 aux = 0x8E; map[aux] = &&after;	
+	aux = 0x84; map[aux] = &&after;	 aux = 0x8C; map[aux] = &&after;	 aux = 0x0F; map[aux] = &&after;	 aux = 0x1F; map[aux] = &&after;	
+	aux = 0x2F; map[aux] = &&after;	 aux = 0x3F; map[aux] = &&after;	 aux = 0x4F; map[aux] = &&after;	 aux = 0x5F; map[aux] = &&after;	
+	aux = 0x6F; map[aux] = &&after;	 aux = 0x7F; map[aux] = &&after;	 aux = 0x8F; map[aux] = &&after;	 aux = 0x9F; map[aux] = &&after;	
+	aux = 0xAF; map[aux] = &&after;	 aux = 0xBF; map[aux] = &&after;	 aux = 0xCF; map[aux] = &&after;	 aux = 0xDF; map[aux] = &&after;	
+	aux = 0xEF; map[aux] = &&after;	 aux = 0xFF; map[aux] = &&after;	 aux = 0x80; map[aux] = &&after;	 aux = 0x44; map[aux] = &&after;	
+	aux = 0x90; map[aux] = &&after;	 aux = 0xF0; map[aux] = &&after;	 aux = 0xD0; map[aux] = &&after;	 aux = 0x30; map[aux] = &&after;	
+	aux = 0x10; map[aux] = &&after;	 aux = 0x50; map[aux] = &&after;	 aux = 0x70; map[aux] = &&after;	 aux = 0x07; map[aux] = &&after;	
+	aux = 0x17; map[aux] = &&after;	 aux = 0x27; map[aux] = &&after;	 aux = 0x37; map[aux] = &&after;	 aux = 0x47; map[aux] = &&after;	
+	aux = 0x57; map[aux] = &&after;	 aux = 0x67; map[aux] = &&after;	 aux = 0x77; map[aux] = &&after;	 aux = 0x87; map[aux] = &&after;	
+	aux = 0x97; map[aux] = &&after;	 aux = 0xa7; map[aux] = &&after;	 aux = 0xb7; map[aux] = &&after;	 aux = 0xc7; map[aux] = &&after;	
+	aux = 0xd7; map[aux] = &&after;	 aux = 0xe7; map[aux] = &&after;	 aux = 0xf7; map[aux] = &&after;	 aux = 0x64; map[aux] = &&after;	
+	aux = 0x74; map[aux] = &&after;	 aux = 0x9C; map[aux] = &&after;	 aux = 0x9E; map[aux] = &&after;	 aux = 0x14; map[aux] = &&after;	
+	aux = 0x1C; map[aux] = &&after;	 aux = 0x04; map[aux] = &&after;	 aux = 0x0C; map[aux] = &&after;	 aux = 0x83; map[aux] = &&after;	
+	aux = 0xA3; map[aux] = &&after;	 aux = 0x93; map[aux] = &&after;	 aux = 0xB3; map[aux] = &&after;	 aux = 0x02; map[aux] = &&after;	
+	aux = 0x22; map[aux] = &&after;	 aux = 0x42; map[aux] = &&after;	 aux = 0x73; map[aux] = &&after;	 aux = 0xC3; map[aux] = &&after;	
+	aux = 0xD3; map[aux] = &&after;	 aux = 0xE3; map[aux] = &&after;	 aux = 0xF3; map[aux] = &&after;	 aux = 0x43; map[aux] = &&after;	
+	aux = 0x53; map[aux] = &&after;	 aux = 0x03; map[aux] = &&after;	 aux = 0x13; map[aux] = &&after;	 aux = 0x23; map[aux] = &&after;	
+	aux = 0xCB; map[aux] = &&after;	
+	
+	aux = 0x92;
+	map[aux]=&&lab92;
+	aux = 0xa5;
+	map[aux]=&&laba5;
+	aux = 0x94;
+	map[aux]=&&lab94;
+	aux = 0x00;
+	map[aux]=&&lab00;
+	aux = 0xae;
+	map[aux]=&&labae;
+	aux = 0xb0;
+	map[aux]=&&labb0; 
 
 	
 	uint32 old_PC;

@@ -95,7 +95,7 @@
 	lastop = RdOp(PC);
 	Add(lastop);
 	PC++;
-	contador++;
+
 	//checkMap;
     switch(lastop)
          {
@@ -105,5 +105,7 @@
      
 	 P &= ~T_FLAG;
 	 skip_T_flag_clear:;	// goto'd by the SET code
-     checkMap;
-     after:;
+	contador++;
+	 checkMap;
+     after:
+     PC--;
