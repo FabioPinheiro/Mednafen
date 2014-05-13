@@ -74,6 +74,7 @@ void HuC6280::Add(uint8 pc){
 	}
 }
 void HuC6280::printMap(){
+	normal = contador - jumps;
 	printf("%f   %f   %f  %f  contador: %d\n", normal,jumps, jumps/(jumps+normal), (jumps+normal), contador);
 	for (std::map<uint8,int>::iterator it=mapTo.begin(); it!=mapTo.end(); ++it)
 		printf("%02x => %d\n",it->first , it->second );
@@ -664,7 +665,7 @@ void HuC6280::RunSub(void)
 	aux = 0x71; map[aux] = &&after;	 aux = 0x29; map[aux] = &&after;	 aux = 0x25; map[aux] = &&after;	 aux = 0x35; map[aux] = &&after;	
 	aux = 0x2D; map[aux] = &&after;	 aux = 0x3D; map[aux] = &&after;	 aux = 0x39; map[aux] = &&after;	 aux = 0x32; map[aux] = &&after;	
 	aux = 0x21; map[aux] = &&after;	 aux = 0x31; map[aux] = &&after;	 aux = 0x89; map[aux] = &&after;	 aux = 0x24; map[aux] = &&after;	
-	aux = 0x34; map[aux] = &&after;	 aux = 0x2C; map[aux] = &&after;	 aux = 0x3C; map[aux] = &&after;	 aux = 0xC9; map[aux] = &&after;	
+	aux = 0x34; map[aux] = &&after;	 aux = 0x2C; map[aux] = &&after;	 aux = 0x3C; map[aux] = &&after;	 //aux = 0x90; map[aux] = &&after;	
 	aux = 0xC5; map[aux] = &&after;	 aux = 0xD5; map[aux] = &&after;	 aux = 0xCD; map[aux] = &&after;	 aux = 0xDD; map[aux] = &&after;	
 	aux = 0xD9; map[aux] = &&after;	 aux = 0xD2; map[aux] = &&after;	 aux = 0xC1; map[aux] = &&after;	 aux = 0xD1; map[aux] = &&after;	
 	aux = 0xE0; map[aux] = &&after;	 aux = 0xE4; map[aux] = &&after;	 aux = 0xEC; map[aux] = &&after;	 aux = 0xC0; map[aux] = &&after;	
@@ -687,7 +688,7 @@ void HuC6280::RunSub(void)
 	aux = 0x6F; map[aux] = &&after;	 aux = 0x7F; map[aux] = &&after;	 aux = 0x8F; map[aux] = &&after;	 aux = 0x9F; map[aux] = &&after;	
 	aux = 0xAF; map[aux] = &&after;	 aux = 0xBF; map[aux] = &&after;	 aux = 0xCF; map[aux] = &&after;	 aux = 0xDF; map[aux] = &&after;	
 	aux = 0xEF; map[aux] = &&after;	 aux = 0xFF; map[aux] = &&after;	 aux = 0x80; map[aux] = &&after;	 aux = 0x44; map[aux] = &&after;	
-	aux = 0x90; map[aux] = &&after;	 aux = 0xF0; map[aux] = &&after;	 aux = 0xD0; map[aux] = &&after;	 aux = 0x30; map[aux] = &&after;	
+	aux = 0xc9; map[aux] = &&after;	 aux = 0xF0; map[aux] = &&after;	 aux = 0xD0; map[aux] = &&after;	 aux = 0x30; map[aux] = &&after;	
 	aux = 0x10; map[aux] = &&after;	 aux = 0x50; map[aux] = &&after;	 aux = 0x70; map[aux] = &&after;	 aux = 0x07; map[aux] = &&after;	
 	aux = 0x17; map[aux] = &&after;	 aux = 0x27; map[aux] = &&after;	 aux = 0x37; map[aux] = &&after;	 aux = 0x47; map[aux] = &&after;	
 	aux = 0x57; map[aux] = &&after;	 aux = 0x67; map[aux] = &&after;	 aux = 0x77; map[aux] = &&after;	 aux = 0x87; map[aux] = &&after;	
@@ -701,6 +702,8 @@ void HuC6280::RunSub(void)
 	aux = 0x53; map[aux] = &&after;	 aux = 0x03; map[aux] = &&after;	 aux = 0x13; map[aux] = &&after;	 aux = 0x23; map[aux] = &&after;	
 	aux = 0xCB; map[aux] = &&after;	
 	
+	
+	
 	aux = 0x92;
 	map[aux]=&&lab92;
 	aux = 0xa5;
@@ -713,8 +716,8 @@ void HuC6280::RunSub(void)
 	map[aux]=&&labae;
 	aux = 0xb0;
 	map[aux]=&&labb0; 
-	aux = 0xc9;
-	map[aux]=&&labc9;
+	/*aux = 0xc9;
+	map[aux]=&&labc9;*/
 	aux = 0x90;
 	map[aux]=&&lab90;
 	
