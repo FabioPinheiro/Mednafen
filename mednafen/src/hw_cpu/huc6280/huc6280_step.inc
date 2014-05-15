@@ -104,10 +104,9 @@
 
      
 	 P &= ~T_FLAG;
-	 skip_T_flag_clear:;	// goto'd by the SET code
+skip_T_flag_clear:	// goto'd by the SET code
 	contador++;
-	jumps++;
+//	jumps++;
 	 checkMap;
-     after:
-     jumps--;
-     PC--;
+after:
+	PC--;

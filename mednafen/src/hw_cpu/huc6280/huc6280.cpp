@@ -46,88 +46,71 @@
 
 #include <map>
 
+void* vec_fabio[256];
 
-std::map<uint8,void*> map;
-std::map<uint8,int> mapTo;
+//std::map<uint8,void*> map;
+//std::map<uint8,int> mapTo;
 unsigned int contador = 0;
 double jumps = 0;
 double normal = 0;
+clock_t tme = clock();
+unsigned int f = 0;
+clock_t sum = tme;
+bool test = true;
+
 void HuC6280::Add(uint8 pc){
-	/*
-	map[0x92]=&lab92;
-	map[0x94]=&lab94;
-	map[0x00]=&lab00;
-	map[0xae]=&labae;
-	map[0xb0]=&labb0;*/
-
-
 	
-	
-	
-	if(mapTo.count(pc)==0)
+/*	if(mapTo.count(pc)==0)
 		mapTo[pc]=1;
 	else
-		mapTo[pc]++;
-	
-	if(contador == 10000000){
-		printMap();
+		mapTo[pc]++;*/
+
+	if(contador == 100000000){
+	//	printMap();
+		f++;
+		tme = clock() - tme;
+		printf ("%d\n",tme);
+		sum += tme;
+		//printf ("Average %d clicks (%f seconds).\n",sum/f,((float)(sum/f))/CLOCKS_PER_SEC);
+		tme = clock();
+		contador= 0;
 	}
 }
 void HuC6280::printMap(){
-	normal = contador - jumps;
-	printf("%f   %f   %f  %f  contador: %d\n", normal,jumps, jumps/(jumps+normal), (jumps+normal), contador);
-	for (std::map<uint8,int>::iterator it=mapTo.begin(); it!=mapTo.end(); ++it)
-		printf("%02x => %d\n",it->first , it->second );
+	//normal = (contador*f) - jumps;
+	//printf("Normal:%f  DirectJumps:%f  Ratio:%f  Total:%f =? contador: %d\n", normal,jumps, jumps/(jumps+normal), (jumps+normal), contador*f);
+	//printf ("Timer %d clicks (%f seconds).\n",tme,((float)tme)/CLOCKS_PER_SEC);
+	//printf ("Average %d clicks (%f seconds).\n",sum/f,((float)(sum/f))/CLOCKS_PER_SEC);
+	/*for (std::map<uint8,int>::iterator it=mapTo.begin(); it!=mapTo.end(); ++it)
+		printf("%02x => %d\n",it->first , it->second );*/
 	
 }
-/*
-void* HuC6280::checkMap(){
 
-	
-	uint8 newOp = RdOp(PC);
-	if(map.count(newOp)==1){
-		PC++;
-		goto *(map[newOp]);
-	}
-		
-}*/
-/*	
-	uint8 aux; \
-	aux = 0x92; \
-	map[aux]=&&lab92; \
-	aux = 0xa5; \
-	map[aux]=&&laba5; \
-	aux = 0x94; \
-	map[aux]=&&lab94; \
-	aux = 0x00; \
-	map[aux]=&&lab00; \
-	aux = 0xae; \
-	map[aux]=&&labae; \
-	aux = 0xb0; \
-	map[aux]=&&labb0; \
-	*/
+#define checkMap {  \
+	uint8 newOp = RdOp(PC);\
+	Add(newOp);\
+	void* aux = vec_fabio[newOp]; \
+	PC++;  \
+	goto *(aux);  \
+}
 
 /*#define checkMap {  \
 	uint8 newOp; \
 	newOp = RdOp(PC);\
-	if(map.count(newOp)==1 && contador%2==0){\
+	Add(newOp);\
+	if(map.count(newOp)==1){\
 		PC++;  \
-		jumps++; \
 		goto *(map[newOp]);  \
-	}else{ \
-		normal++;\
-		goto after;\
 	}\
 }*/
 
-#define checkMap {  \
+/*#define checkMap {  \
 	uint8 newOp; \
 	newOp = RdOp(PC);\
 	Add(newOp);\
 	PC++;  \
 	goto *(map[newOp]);  \
-}
-//history *h = new history();
+}*/
 
 
 void HuC6280::StealCycle(void)
@@ -641,85 +624,108 @@ void HuC6280::HappySync(void)
 template<bool DebugMode>
 void HuC6280::RunSub(void)
 {	
-
-	uint8 aux;
-	aux = 0x40; map[aux] = &&after;	 aux = 0x60; map[aux] = &&after;	 aux = 0x48; map[aux] = &&after;	 aux = 0x08; map[aux] = &&after;	
-	aux = 0xDA; map[aux] = &&after;	 aux = 0x5A; map[aux] = &&after;	 aux = 0x68; map[aux] = &&after;	 aux = 0xFA; map[aux] = &&after;	
-	aux = 0x7A; map[aux] = &&after;	 aux = 0x28; map[aux] = &&after;	 aux = 0x4C; map[aux] = &&after;	 aux = 0x6C; map[aux] = &&after;	
-	aux = 0x7C; map[aux] = &&after;	 aux = 0x20; map[aux] = &&after;	 aux = 0xAA; map[aux] = &&after;	 aux = 0x8A; map[aux] = &&after;	
-	aux = 0xA8; map[aux] = &&after;	 aux = 0x98; map[aux] = &&after;	 aux = 0xBA; map[aux] = &&after;	 aux = 0x9A; map[aux] = &&after;	
-	aux = 0xCA; map[aux] = &&after;	 aux = 0x88; map[aux] = &&after;	 aux = 0xE8; map[aux] = &&after;	 aux = 0xC8; map[aux] = &&after;	
-	aux = 0x54; map[aux] = &&after;	 aux = 0xD4; map[aux] = &&after;	 aux = 0x62; map[aux] = &&after;	 aux = 0x82; map[aux] = &&after;	
-	aux = 0xC2; map[aux] = &&after;	 aux = 0x18; map[aux] = &&after;	 aux = 0xD8; map[aux] = &&after;	 aux = 0x58; map[aux] = &&after;	
-	aux = 0xB8; map[aux] = &&after;	 aux = 0x38; map[aux] = &&after;	 aux = 0xF8; map[aux] = &&after;	 aux = 0x78; map[aux] = &&after;	
-	aux = 0xF4; map[aux] = &&after;	 aux = 0xEA; map[aux] = &&after;	 aux = 0x0A; map[aux] = &&after;	 aux = 0x06; map[aux] = &&after;	
-	aux = 0x16; map[aux] = &&after;	 aux = 0x0E; map[aux] = &&after;	 aux = 0x1E; map[aux] = &&after;	 aux = 0x3A; map[aux] = &&after;	
-	aux = 0xC6; map[aux] = &&after;	 aux = 0xD6; map[aux] = &&after;	 aux = 0xCE; map[aux] = &&after;	 aux = 0xDE; map[aux] = &&after;	
-	aux = 0x1A; map[aux] = &&after;	 aux = 0xE6; map[aux] = &&after;	 aux = 0xF6; map[aux] = &&after;	 aux = 0xEE; map[aux] = &&after;	
-	aux = 0xFE; map[aux] = &&after;	 aux = 0x4A; map[aux] = &&after;	 aux = 0x46; map[aux] = &&after;	 aux = 0x56; map[aux] = &&after;	
-	aux = 0x4E; map[aux] = &&after;	 aux = 0x5E; map[aux] = &&after;	 aux = 0x2A; map[aux] = &&after;	 aux = 0x26; map[aux] = &&after;	
-	aux = 0x36; map[aux] = &&after;	 aux = 0x2E; map[aux] = &&after;	 aux = 0x3E; map[aux] = &&after;	 aux = 0x6A; map[aux] = &&after;	
-	aux = 0x66; map[aux] = &&after;	 aux = 0x76; map[aux] = &&after;	 aux = 0x6E; map[aux] = &&after;	 aux = 0x7E; map[aux] = &&after;	
-	aux = 0x69; map[aux] = &&after;	 aux = 0x65; map[aux] = &&after;	 aux = 0x75; map[aux] = &&after;	 aux = 0x6D; map[aux] = &&after;	
-	aux = 0x7D; map[aux] = &&after;	 aux = 0x79; map[aux] = &&after;	 aux = 0x72; map[aux] = &&after;	 aux = 0x61; map[aux] = &&after;	
-	aux = 0x71; map[aux] = &&after;	 aux = 0x29; map[aux] = &&after;	 aux = 0x25; map[aux] = &&after;	 aux = 0x35; map[aux] = &&after;	
-	aux = 0x2D; map[aux] = &&after;	 aux = 0x3D; map[aux] = &&after;	 aux = 0x39; map[aux] = &&after;	 aux = 0x32; map[aux] = &&after;	
-	aux = 0x21; map[aux] = &&after;	 aux = 0x31; map[aux] = &&after;	 aux = 0x89; map[aux] = &&after;	 aux = 0x24; map[aux] = &&after;	
-	aux = 0x34; map[aux] = &&after;	 aux = 0x2C; map[aux] = &&after;	 aux = 0x3C; map[aux] = &&after;	 //aux = 0x90; map[aux] = &&after;	
-	aux = 0xC5; map[aux] = &&after;	 aux = 0xD5; map[aux] = &&after;	 aux = 0xCD; map[aux] = &&after;	 aux = 0xDD; map[aux] = &&after;	
-	aux = 0xD9; map[aux] = &&after;	 aux = 0xD2; map[aux] = &&after;	 aux = 0xC1; map[aux] = &&after;	 aux = 0xD1; map[aux] = &&after;	
-	aux = 0xE0; map[aux] = &&after;	 aux = 0xE4; map[aux] = &&after;	 aux = 0xEC; map[aux] = &&after;	 aux = 0xC0; map[aux] = &&after;	
-	aux = 0xC4; map[aux] = &&after;	 aux = 0xCC; map[aux] = &&after;	 aux = 0x49; map[aux] = &&after;	 aux = 0x45; map[aux] = &&after;	
-	aux = 0x55; map[aux] = &&after;	 aux = 0x4D; map[aux] = &&after;	 aux = 0x5D; map[aux] = &&after;	 aux = 0x59; map[aux] = &&after;	
-	aux = 0x52; map[aux] = &&after;	 aux = 0x41; map[aux] = &&after;	 aux = 0x51; map[aux] = &&after;	 aux = 0xA9; map[aux] = &&after;	
-	aux = 0xB5; map[aux] = &&after;	 aux = 0xAD; map[aux] = &&after;	 aux = 0xBD; map[aux] = &&after;	 aux = 0xB9; map[aux] = &&after;	
-	aux = 0xB2; map[aux] = &&after;	 aux = 0xA1; map[aux] = &&after;	 aux = 0xB1; map[aux] = &&after;	 aux = 0xA2; map[aux] = &&after;	
-	aux = 0xA6; map[aux] = &&after;	 aux = 0xB6; map[aux] = &&after;	 aux = 0xBE; map[aux] = &&after;	 aux = 0xA0; map[aux] = &&after;	
-	aux = 0xA4; map[aux] = &&after;	 aux = 0xB4; map[aux] = &&after;	 aux = 0xAC; map[aux] = &&after;	 aux = 0xBC; map[aux] = &&after;	
-	aux = 0x09; map[aux] = &&after;	 aux = 0x05; map[aux] = &&after;	 aux = 0x15; map[aux] = &&after;	 aux = 0x0D; map[aux] = &&after;	
-	aux = 0x1D; map[aux] = &&after;	 aux = 0x19; map[aux] = &&after;	 aux = 0x12; map[aux] = &&after;	 aux = 0x01; map[aux] = &&after;	
-	aux = 0x11; map[aux] = &&after;	 aux = 0xE9; map[aux] = &&after;	 aux = 0xE5; map[aux] = &&after;	 aux = 0xF5; map[aux] = &&after;	
-	aux = 0xED; map[aux] = &&after;	 aux = 0xFD; map[aux] = &&after;	 aux = 0xF9; map[aux] = &&after;	 aux = 0xF2; map[aux] = &&after;	
-	aux = 0xE1; map[aux] = &&after;	 aux = 0xF1; map[aux] = &&after;	 aux = 0x85; map[aux] = &&after;	 aux = 0x95; map[aux] = &&after;	
-	aux = 0x8D; map[aux] = &&after;	 aux = 0x9D; map[aux] = &&after;	 aux = 0x99; map[aux] = &&after;	 aux = 0x81; map[aux] = &&after;	
-	aux = 0x91; map[aux] = &&after;	 aux = 0x86; map[aux] = &&after;	 aux = 0x96; map[aux] = &&after;	 aux = 0x8E; map[aux] = &&after;	
-	aux = 0x84; map[aux] = &&after;	 aux = 0x8C; map[aux] = &&after;	 aux = 0x0F; map[aux] = &&after;	 aux = 0x1F; map[aux] = &&after;	
-	aux = 0x2F; map[aux] = &&after;	 aux = 0x3F; map[aux] = &&after;	 aux = 0x4F; map[aux] = &&after;	 aux = 0x5F; map[aux] = &&after;	
-	aux = 0x6F; map[aux] = &&after;	 aux = 0x7F; map[aux] = &&after;	 aux = 0x8F; map[aux] = &&after;	 aux = 0x9F; map[aux] = &&after;	
-	aux = 0xAF; map[aux] = &&after;	 aux = 0xBF; map[aux] = &&after;	 aux = 0xCF; map[aux] = &&after;	 aux = 0xDF; map[aux] = &&after;	
-	aux = 0xEF; map[aux] = &&after;	 aux = 0xFF; map[aux] = &&after;	 aux = 0x80; map[aux] = &&after;	 aux = 0x44; map[aux] = &&after;	
-	aux = 0xc9; map[aux] = &&after;	 aux = 0xF0; map[aux] = &&after;	 aux = 0xD0; map[aux] = &&after;	 aux = 0x30; map[aux] = &&after;	
-	aux = 0x10; map[aux] = &&after;	 aux = 0x50; map[aux] = &&after;	 aux = 0x70; map[aux] = &&after;	 aux = 0x07; map[aux] = &&after;	
-	aux = 0x17; map[aux] = &&after;	 aux = 0x27; map[aux] = &&after;	 aux = 0x37; map[aux] = &&after;	 aux = 0x47; map[aux] = &&after;	
-	aux = 0x57; map[aux] = &&after;	 aux = 0x67; map[aux] = &&after;	 aux = 0x77; map[aux] = &&after;	 aux = 0x87; map[aux] = &&after;	
-	aux = 0x97; map[aux] = &&after;	 aux = 0xa7; map[aux] = &&after;	 aux = 0xb7; map[aux] = &&after;	 aux = 0xc7; map[aux] = &&after;	
-	aux = 0xd7; map[aux] = &&after;	 aux = 0xe7; map[aux] = &&after;	 aux = 0xf7; map[aux] = &&after;	 aux = 0x64; map[aux] = &&after;	
-	aux = 0x74; map[aux] = &&after;	 aux = 0x9C; map[aux] = &&after;	 aux = 0x9E; map[aux] = &&after;	 aux = 0x14; map[aux] = &&after;	
-	aux = 0x1C; map[aux] = &&after;	 aux = 0x04; map[aux] = &&after;	 aux = 0x0C; map[aux] = &&after;	 aux = 0x83; map[aux] = &&after;	
-	aux = 0xA3; map[aux] = &&after;	 aux = 0x93; map[aux] = &&after;	 aux = 0xB3; map[aux] = &&after;	 aux = 0x02; map[aux] = &&after;	
-	aux = 0x22; map[aux] = &&after;	 aux = 0x42; map[aux] = &&after;	 aux = 0x73; map[aux] = &&after;	 aux = 0xC3; map[aux] = &&after;	
-	aux = 0xD3; map[aux] = &&after;	 aux = 0xE3; map[aux] = &&after;	 aux = 0xF3; map[aux] = &&after;	 aux = 0x43; map[aux] = &&after;	
-	aux = 0x53; map[aux] = &&after;	 aux = 0x03; map[aux] = &&after;	 aux = 0x13; map[aux] = &&after;	 aux = 0x23; map[aux] = &&after;	
-	aux = 0xCB; map[aux] = &&after;	
+	fabio_aqui0:
+	static void* hack_p_fabio = &&fabio_aqui1;
+	//fabio_aqui00:
 	
+	goto *(hack_p_fabio);
+	fabio_aqui1:
+	hack_p_fabio = &&fabio_aqui2;
+	//printf("HuC6280::RunSub\n");
+	if(test){
+		test=false;
+		uint8 aux;
+vec_fabio[0x40]=&&after; vec_fabio[0x60]=&&after; vec_fabio[0x48]=&&after; vec_fabio[0x08]=&&after; 
+vec_fabio[0xDA]=&&after; vec_fabio[0x5A]=&&after; vec_fabio[0x68]=&&after; vec_fabio[0xFA]=&&after; 
+vec_fabio[0x7A]=&&after; vec_fabio[0x28]=&&after; vec_fabio[0x4C]=&&after; vec_fabio[0x6C]=&&after; 
+vec_fabio[0x7C]=&&after; vec_fabio[0x20]=&&after; vec_fabio[0xAA]=&&after; vec_fabio[0x8A]=&&after; 
+vec_fabio[0xA8]=&&after; vec_fabio[0x98]=&&after; vec_fabio[0xBA]=&&after; vec_fabio[0x9A]=&&after; 
+vec_fabio[0xCA]=&&after; vec_fabio[0x88]=&&after; vec_fabio[0xE8]=&&after; vec_fabio[0xC8]=&&after; 
+vec_fabio[0x54]=&&after; vec_fabio[0xD4]=&&after; vec_fabio[0x62]=&&after; vec_fabio[0x82]=&&after; 
+vec_fabio[0xC2]=&&after; vec_fabio[0x18]=&&after; vec_fabio[0xD8]=&&after; vec_fabio[0x58]=&&after; 
+vec_fabio[0xB8]=&&after; vec_fabio[0x38]=&&after; vec_fabio[0xF8]=&&after; vec_fabio[0x78]=&&after; 
+vec_fabio[0xF4]=&&after; vec_fabio[0xEA]=&&after; vec_fabio[0x0A]=&&after; vec_fabio[0x06]=&&after; 
+vec_fabio[0x16]=&&after; vec_fabio[0x0E]=&&after; vec_fabio[0x1E]=&&after; vec_fabio[0x3A]=&&after; 
+vec_fabio[0xC6]=&&after; vec_fabio[0xD6]=&&after; vec_fabio[0xCE]=&&after; vec_fabio[0xDE]=&&after; 
+vec_fabio[0x1A]=&&after; vec_fabio[0xE6]=&&after; vec_fabio[0xF6]=&&after; vec_fabio[0xEE]=&&after; 
+vec_fabio[0xFE]=&&after; vec_fabio[0x4A]=&&after; vec_fabio[0x46]=&&after; vec_fabio[0x56]=&&after; 
+vec_fabio[0x4E]=&&after; vec_fabio[0x5E]=&&after; vec_fabio[0x2A]=&&after; vec_fabio[0x26]=&&after; 
+vec_fabio[0x36]=&&after; vec_fabio[0x2E]=&&after; vec_fabio[0x3E]=&&after; vec_fabio[0x6A]=&&after; 
+vec_fabio[0x66]=&&after; vec_fabio[0x76]=&&after; vec_fabio[0x6E]=&&after; vec_fabio[0x7E]=&&after; 
+vec_fabio[0x69]=&&after; vec_fabio[0x65]=&&after; vec_fabio[0x75]=&&after; vec_fabio[0x6D]=&&after; 
+vec_fabio[0x7D]=&&after; vec_fabio[0x79]=&&after; vec_fabio[0x72]=&&after; vec_fabio[0x61]=&&after; 
+vec_fabio[0x71]=&&after; vec_fabio[0x29]=&&after; vec_fabio[0x25]=&&after; vec_fabio[0x35]=&&after; 
+vec_fabio[0x2D]=&&after; vec_fabio[0x3D]=&&after; vec_fabio[0x39]=&&after; vec_fabio[0x32]=&&after; 
+vec_fabio[0x21]=&&after; vec_fabio[0x31]=&&after; vec_fabio[0x89]=&&after; vec_fabio[0x24]=&&after; 
+vec_fabio[0x34]=&&after; vec_fabio[0x2C]=&&after; vec_fabio[0x3C]=&&after; vec_fabio[0xC9]=&&after; 
+vec_fabio[0xC5]=&&after; vec_fabio[0xD5]=&&after; vec_fabio[0xCD]=&&after; vec_fabio[0xDD]=&&after; 
+vec_fabio[0xD9]=&&after; vec_fabio[0xD2]=&&after; vec_fabio[0xC1]=&&after; vec_fabio[0xD1]=&&after; 
+vec_fabio[0xE0]=&&after; vec_fabio[0xE4]=&&after; vec_fabio[0xEC]=&&after; vec_fabio[0xC0]=&&after; 
+vec_fabio[0xC4]=&&after; vec_fabio[0xCC]=&&after; vec_fabio[0x49]=&&after; vec_fabio[0x45]=&&after; 
+vec_fabio[0x55]=&&after; vec_fabio[0x4D]=&&after; vec_fabio[0x5D]=&&after; vec_fabio[0x59]=&&after; 
+vec_fabio[0x52]=&&after; vec_fabio[0x41]=&&after; vec_fabio[0x51]=&&after; vec_fabio[0xA9]=&&after; 
+vec_fabio[0xB5]=&&after; vec_fabio[0xAD]=&&after; vec_fabio[0xBD]=&&after; vec_fabio[0xB9]=&&after; 
+vec_fabio[0xB2]=&&after; vec_fabio[0xA1]=&&after; vec_fabio[0xB1]=&&after; vec_fabio[0xA2]=&&after; 
+vec_fabio[0xA6]=&&after; vec_fabio[0xB6]=&&after; vec_fabio[0xBE]=&&after; vec_fabio[0xA0]=&&after; 
+vec_fabio[0xA4]=&&after; vec_fabio[0xB4]=&&after; vec_fabio[0xAC]=&&after; vec_fabio[0xBC]=&&after; 
+vec_fabio[0x09]=&&after; vec_fabio[0x05]=&&after; vec_fabio[0x15]=&&after; vec_fabio[0x0D]=&&after; 
+vec_fabio[0x1D]=&&after; vec_fabio[0x19]=&&after; vec_fabio[0x12]=&&after; vec_fabio[0x01]=&&after; 
+vec_fabio[0x11]=&&after; vec_fabio[0xE9]=&&after; vec_fabio[0xE5]=&&after; vec_fabio[0xF5]=&&after; 
+vec_fabio[0xED]=&&after; vec_fabio[0xFD]=&&after; vec_fabio[0xF9]=&&after; vec_fabio[0xF2]=&&after; 
+vec_fabio[0xE1]=&&after; vec_fabio[0xF1]=&&after; vec_fabio[0x85]=&&after; vec_fabio[0x95]=&&after; 
+vec_fabio[0x8D]=&&after; vec_fabio[0x9D]=&&after; vec_fabio[0x99]=&&after; vec_fabio[0x81]=&&after; 
+vec_fabio[0x91]=&&after; vec_fabio[0x86]=&&after; vec_fabio[0x96]=&&after; vec_fabio[0x8E]=&&after; 
+vec_fabio[0x84]=&&after; vec_fabio[0x8C]=&&after; vec_fabio[0x0F]=&&after; vec_fabio[0x1F]=&&after; 
+vec_fabio[0x2F]=&&after; vec_fabio[0x3F]=&&after; vec_fabio[0x4F]=&&after; vec_fabio[0x5F]=&&after; 
+vec_fabio[0x6F]=&&after; vec_fabio[0x7F]=&&after; vec_fabio[0x8F]=&&after; vec_fabio[0x9F]=&&after; 
+vec_fabio[0xAF]=&&after; vec_fabio[0xBF]=&&after; vec_fabio[0xCF]=&&after; vec_fabio[0xDF]=&&after; 
+vec_fabio[0xEF]=&&after; vec_fabio[0xFF]=&&after; vec_fabio[0x80]=&&after; vec_fabio[0x44]=&&after;  
+vec_fabio[0xF0]=&&after; vec_fabio[0xD0]=&&after; vec_fabio[0x30]=&&after; 
+vec_fabio[0x10]=&&after; vec_fabio[0x50]=&&after; vec_fabio[0x70]=&&after; vec_fabio[0x07]=&&after; 
+vec_fabio[0x17]=&&after; vec_fabio[0x27]=&&after; vec_fabio[0x37]=&&after; vec_fabio[0x47]=&&after; 
+vec_fabio[0x57]=&&after; vec_fabio[0x67]=&&after; vec_fabio[0x77]=&&after; vec_fabio[0x87]=&&after; 
+vec_fabio[0x97]=&&after; vec_fabio[0xa7]=&&after; vec_fabio[0xb7]=&&after; vec_fabio[0xc7]=&&after; 
+vec_fabio[0xd7]=&&after; vec_fabio[0xe7]=&&after; vec_fabio[0xf7]=&&after; vec_fabio[0x64]=&&after; 
+vec_fabio[0x74]=&&after; vec_fabio[0x9C]=&&after; vec_fabio[0x9E]=&&after; vec_fabio[0x14]=&&after; 
+vec_fabio[0x1C]=&&after; vec_fabio[0x04]=&&after; vec_fabio[0x0C]=&&after; vec_fabio[0x83]=&&after; 
+vec_fabio[0xA3]=&&after; vec_fabio[0x93]=&&after; vec_fabio[0xB3]=&&after; vec_fabio[0x02]=&&after; 
+vec_fabio[0x22]=&&after; vec_fabio[0x42]=&&after; vec_fabio[0x73]=&&after; vec_fabio[0xC3]=&&after; 
+vec_fabio[0xD3]=&&after; vec_fabio[0xE3]=&&after; vec_fabio[0xF3]=&&after; vec_fabio[0x43]=&&after; 
+vec_fabio[0x53]=&&after; vec_fabio[0x03]=&&after; vec_fabio[0x13]=&&after; vec_fabio[0x23]=&&after; 
+vec_fabio[0xCB]=&&after; 
+/*		for(int i = 0; i<=255 ; i++)
+			vec_fabio[i]=&&after;*/
+		vec_fabio[0x92]=&&lab92;
+		vec_fabio[0xa5]=&&laba5;
+		vec_fabio[0x94]=&&lab94;
+		vec_fabio[0x00]=&&lab00;
+		vec_fabio[0xae]=&&labae;
+		vec_fabio[0xb0]=&&labb0;
+		vec_fabio[0x90]=&&lab90;
+		//vec_fabio[0xf0]=&&labf0;
+		
+		/*aux = 0x92;
+		map[aux]=&&lab92;
+		aux = 0xa5;
+		map[aux]=&&laba5;
+		aux = 0x94;
+		map[aux]=&&lab94;
+		aux = 0x00;
+		map[aux]=&&lab00;
+		aux = 0xae;
+		map[aux]=&&labae;
+		aux = 0xb0;
+		map[aux]=&&labb0; 
+		aux = 0xc9;
+		map[aux]=&&labc9;
+		aux = 0x90;
+		map[aux]=&&lab90;*/
+		printf("INIT MAP and vec_fabio\n");
+		
+	}
+	//hack_p_fabio = &&fabio_aqui2;
+	fabio_aqui2:
 	
-	
-	aux = 0x92;
-	map[aux]=&&lab92;
-	aux = 0xa5;
-	map[aux]=&&laba5;
-	aux = 0x94;
-	map[aux]=&&lab94;
-	aux = 0x00;
-	map[aux]=&&lab00;
-	aux = 0xae;
-	map[aux]=&&labae;
-	aux = 0xb0;
-	map[aux]=&&labb0; 
-	/*aux = 0xc9;
-	map[aux]=&&labc9;*/
-	aux = 0x90;
-	map[aux]=&&lab90;
 	
 	uint32 old_PC;
 

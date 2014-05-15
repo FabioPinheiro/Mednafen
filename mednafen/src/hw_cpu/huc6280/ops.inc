@@ -465,7 +465,9 @@ labb0:
 	break;
 
 /* BEQ */
-case 0xF0: JR<DebugMode>(P&Z_FLAG); break;
+case 0xF0:
+labf0:
+	JR<DebugMode>(P&Z_FLAG); break;
 
 /* BNE */
 case 0xD0: JR<DebugMode>(!(P&Z_FLAG)); break;

@@ -1,15 +1,10 @@
 #ifndef __MDFN_HUC6280_H
 #define __MDFN_HUC6280_H
 
-#include        <trio/trio.h>
-/*
-class history{
+#include <trio/trio.h>
+#include <ctime>
 
 
-public: 
-	void Add(uint8 pc);
-	//void printMap();
-};*/
 
 class HuC6280_Support
 {
@@ -472,6 +467,7 @@ class HuC6280
 
 	INLINE void ADDCYC(int x)
 	{
+	 //x--;
 	 int master = (x * 3) << speed_shift_cache;
 
 	 timestamp += master;
@@ -484,6 +480,7 @@ class HuC6280
 
         INLINE void ADDCYC_MASTER(int master)
         {
+			master = 1;
          timestamp += master;
          next_event -= master;
          next_user_event -= master;
